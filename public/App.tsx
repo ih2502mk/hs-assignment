@@ -1,27 +1,26 @@
 import React, { FC, useState, useReducer, useEffect } from "react";
 import ReactDOM from "react-dom";
-import { ChannelList } from "./components/ChannelsList";
+import { ChannelsList } from "./components/ChannelsList";
 import Channel from "../shared/Channel";
+import { MessagesPanel } from "./components/MessagesPanel";
 
 const App: FC = () => {
-    const channels:Channel[] = [];
+    const channels: Channel[] = [];
 
-    const [currentChannel, setCurrentChannel] = useState('');
+    const [currentChannelId, setCurrentChannelId] = useState("");
 
-    const handleSelectChannel = ({id}:Pick<Channel, "id">) => {
-        setCurrentChannel(id);
-    }
-    
+    const handleSelectChannel = (id: Channel["id"]) => {
+        setCurrentChannelId(id);
+    };
+
     return (
         <>
-            <ChannelList
+            <ChannelsList
                 channels={channels}
                 onSelectChannel={handleSelectChannel}
             />
 
-            <MessagesPanel
-                channel={currentChannel}
-            />
+            <MessagesPanel channelId={currentChannelId} />
         </>
     );
 };

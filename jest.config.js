@@ -2,5 +2,6 @@
 module.exports = {
   preset: "ts-jest/presets/js-with-ts",
   clearMocks: true,
-  coverageProvider: "v8",
+  testPathIgnorePatterns: ['<rootDir>/node_modules/'],
+  testRegex: '(/tests/.*|\\.(test|spec))\\.(js|jsx|ts|tsx?)$',
 };

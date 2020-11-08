@@ -12,23 +12,24 @@ router
         const channels = await ChannelModel.allChannels();
         ctx.body = JSON.stringify({ channels });
     })
-    
+
     .get("/api/messages/:channel_id", koaBody(), async (ctx: Context) => {
         try {
-            const messages = await MessageModel.allInChannel(ctx.params.channel_id);
+            const messages = await MessageModel.allInChannel(
+                ctx.params.channel_id
+            );
             ctx.body = JSON.stringify({ status: "success", messages });
         } catch (e) {
             ctx.throw(e);
         }
     })
-    
+
     .post("/api/message/:channel_id", koaBody(), async (ctx: Context) => {
         const { id, content } = ctx.request.body;
         const message = new MessageModel({
-            id, 
-            content, 
-            channelId: ctx.params.channel_id,
-            timestamp: new Date() 
+            id,
+            content,
+            channelId: ctx.params.channel_id
         });
 
         try {
@@ -39,8 +40,8 @@ router
         }
     })
 
-    .del('/api/message/:message_id/:channel_id', async (ctx: Context) => {
-        const { message_id:id, channel_id:channelId } = ctx.params;
+    .del("/api/message/:message_id/:channel_id", async (ctx: Context) => {
+        const { message_id: id, channel_id: channelId } = ctx.params;
 
         try {
             await MessageModel.destroyMessage({ id, channelId });
@@ -48,7 +49,6 @@ router
         } catch (e) {
             ctx.throw(e);
         }
-    })
-    
+    });
 
 export const routes = router.routes();

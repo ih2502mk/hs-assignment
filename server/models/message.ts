@@ -1,37 +1,42 @@
 import levelup from "levelup";
 import leveldown from "leveldown";
-import encode from 'encoding-down';
+import encode from "encoding-down";
 import { customAlphabet } from "nanoid/non-secure";
 import { DB_PATH } from "../../shared/config";
+import Message from "../../shared/Message";
 
-const db = levelup(encode(leveldown(DB_PATH), { valueEncoding: 'json' }));
+const db = levelup(encode(leveldown(DB_PATH), { valueEncoding: "json" }));
 
-const DB_ID_ALPHABET = 'abcdefghijklmnopqrstuvwxyz1234567890';
-const DB_ID_HI = '~';
-const DB_ID_LO = '!';
+const DB_ID_ALPHABET = "abcdefghijklmnopqrstuvwxyz1234567890";
+const DB_ID_HI = "~";
+const DB_ID_LO = "!";
 const DB_ID_LENGTH = 10;
 const nanoid = customAlphabet(DB_ID_ALPHABET, DB_ID_LENGTH);
-
-import Message from "../../shared/Message";
 
 export class MessageModel implements Message {
     id: string;
     channelId: string;
     content: string;
-    timestamp: Date;
+    created?: Date;
+    updated?: Date;
 
-    constructor({ id, channelId, content, timestamp }: Message) {
-        Object.assign(this, { id, channelId, content, timestamp });
+    constructor({ id, channelId, content }: Message) {
+        Object.assign(this, { id, channelId, content });
     }
 
     async save() {
+        const now = new Date();
         if (this.id === null) {
             this.id = nanoid();
+            this.created = now;
         }
 
-        await db.put(`${this.channelId}:${this.id}`, { 
-            content: this.content, 
-            timestamp: this.timestamp 
+        this.updated = now;
+
+        await db.put(`${this.channelId}:${this.id}`, {
+            content: this.content,
+            created: this.created,
+            updated: this.updated
         });
 
         return this.id;
@@ -46,7 +51,11 @@ export class MessageModel implements Message {
 
             const messages: Message[] = [];
 
-            const walker = (err: Error, key: string, value: Pick<Message, "content" | "timestamp">) => {
+            const walker = (
+                err: Error,
+                key: string,
+                value: Pick<Message, "content" | "created" | "updated">
+            ) => {
                 if (err) {
                     reject(err);
                     return;
@@ -54,16 +63,18 @@ export class MessageModel implements Message {
                 if (typeof key === "undefined") {
                     messagesIterator.end(endErr => {
                         if (endErr) reject(endErr);
-                        resolve(messages.sort((a, b) => {
-                            if (a.timestamp > b.timestamp) return 1;
-                            if (a.timestamp < b.timestamp) return -1;
-                            return 0;
-                        }));
+                        resolve(
+                            messages.sort((a, b) => {
+                                if (a.created > b.created) return 1;
+                                if (a.created < b.created) return -1;
+                                return 0;
+                            })
+                        );
                     });
                     return;
                 }
 
-                const [id, _] = key.toString().split(':');
+                const [id, _] = key.toString().split(":");
 
                 messages.push({
                     id,
@@ -74,10 +85,13 @@ export class MessageModel implements Message {
             };
 
             messagesIterator.next(walker);
-        })
+        });
     }
 
-    static async destroyMessage({id, channelId}:Pick<Message, "id" | "channelId">) {
+    static async destroyMessage({
+        id,
+        channelId
+    }: Pick<Message, "id" | "channelId">) {
         await db.del(`${channelId}:${id}`);
     }
 }
