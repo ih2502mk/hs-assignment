@@ -1,1 +1,1 @@
-{"version":3,"sources":["../node_modules/react-list-drag-and-drop/lib/RLDDFloatingItem.css"],"names":[],"mappings":"AAAA;AACA;AACA;AACA","file":"App.04586683.css","sourceRoot":"..","sourcesContent":[".dl-item.activity > * {\n  pointer-events: none;\n}\n"]}
+{"version":3,"sources":["components/ChannelsList.scss"],"names":[],"mappings":"AAAA;EACI;EACA","file":"App.04586683.css","sourceRoot":"..","sourcesContent":["ul.channels {\n    padding: 1em;\n    background-color: red;\n}"]}

@@ -1,22 +1,11 @@
-import levelup from "levelup";
-import leveldown from "leveldown";
-import encode from "encoding-down";
-import { customAlphabet } from "nanoid/non-secure";
-import { DB_PATH } from "../../shared/config";
+import { db, nanoid, DB_ID_LO, DB_ID_HI } from "../db";
 import Message from "../../shared/Message";
-
-const db = levelup(encode(leveldown(DB_PATH), { valueEncoding: "json" }));
-
-const DB_ID_ALPHABET = "abcdefghijklmnopqrstuvwxyz1234567890";
-const DB_ID_HI = "~";
-const DB_ID_LO = "!";
-const DB_ID_LENGTH = 10;
-const nanoid = customAlphabet(DB_ID_ALPHABET, DB_ID_LENGTH);
 
 export class MessageModel implements Message {
     id: string;
     channelId: string;
     content: string;
+    author: string;
     created?: Date;
     updated?: Date;
 
@@ -35,6 +24,7 @@ export class MessageModel implements Message {
 
         await db.put(`${this.channelId}:${this.id}`, {
             content: this.content,
+            author: this.author,
             created: this.created,
             updated: this.updated
         });
@@ -42,7 +32,7 @@ export class MessageModel implements Message {
         return this.id;
     }
 
-    static async allInChannel({ channelId }: Pick<Message, "channelId">) {
+    static async allInChannel(channelId: Message["channelId"]) {
         return new Promise((resolve, reject) => {
             const messagesIterator = db.iterator({
                 gte: `${channelId}:${DB_ID_LO}`,
@@ -54,7 +44,7 @@ export class MessageModel implements Message {
             const walker = (
                 err: Error,
                 key: string,
-                value: Pick<Message, "content" | "created" | "updated">
+                value: Pick<Message, "content" | "author" | "created" | "updated">
             ) => {
                 if (err) {
                     reject(err);
@@ -74,7 +64,7 @@ export class MessageModel implements Message {
                     return;
                 }
 
-                const [id, _] = key.toString().split(":");
+                const [_, id] = key.toString().split(":");
 
                 messages.push({
                     id,

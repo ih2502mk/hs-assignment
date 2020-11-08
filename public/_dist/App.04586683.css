@@ -1,6 +1,6 @@
-.dl-item.activity > * {
-  pointer-events: none;
+ul.channels {
+  padding: 1em;
+  background-color: red;
 }
-
 
 /*# sourceMappingURL=/App.04586683.css.map */

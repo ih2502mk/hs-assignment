@@ -10,7 +10,7 @@ const router = new Router();
 router
     .get("/api/channels", async (ctx: Context) => {
         const channels = await ChannelModel.allChannels();
-        ctx.body = JSON.stringify({ channels });
+        ctx.body = JSON.stringify({ status: "success", channels });
     })
 
     .get("/api/messages/:channel_id", koaBody(), async (ctx: Context) => {
@@ -25,10 +25,11 @@ router
     })
 
     .post("/api/message/:channel_id", koaBody(), async (ctx: Context) => {
-        const { id, content } = ctx.request.body;
+        const { id, content, author } = ctx.request.body;
         const message = new MessageModel({
             id,
             content,
+            author,
             channelId: ctx.params.channel_id
         });
 

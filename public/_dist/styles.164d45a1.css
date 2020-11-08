@@ -57,112 +57,12 @@ body {
 }
 
 #root {
-  width: 60%;
-  min-height: 100vh;
-  max-width: calc(400px + 6rem);
-  margin: 0 auto;
-  padding: 0;
-  background-color: white;
-}
-#root .form-wrap {
-  border-bottom: 1px solid #ddd;
-  padding: 3em 18px 18px;
-  background-color: #F3F7EC;
-}
-#root .form-wrap::after {
-  display: block;
-  content: "";
-  clear: both;
-}
-#root textarea {
+  display: flex;
+  align-items: start;
   width: 100%;
-  box-sizing: border-box;
-  height: 130px;
-  resize: none;
-  border: 2px solid #777;
-  background-color: #fff;
-  border-radius: 2px;
-  margin-bottom: 12px;
-  font-size: 14px;
-}
-#root textarea:focus, #root textarea:active {
-  outline: none;
-  border-color: #2300c8;
-}
-#root button {
-  border: 2px solid #777;
-  border-radius: 2px;
-  background-color: #C1DBE3;
-  box-shadow: 2px 2px 0 #333;
-  font-size: 16px;
-  font-family: "Anton", sans-serif;
-  padding: 4px 2em;
-  color: #333;
-  cursor: pointer;
-}
-#root button:active {
-  transform: translate(2px, 2px);
-  box-shadow: 0px 0px 0 #333;
-  outline: none;
-}
-#root button:focus {
-  outline: none;
-  border-color: #2300c8;
-}
-#root button.smaller {
-  font-size: 12px;
-  padding: 2px 0.8em;
-}
-#root button.flat {
-  box-shadow: none;
-  border: transparent;
-  letter-spacing: 0.4px;
-  text-transform: uppercase;
-}
-#root button.primary {
-  background-color: #0892A5;
-  color: #eee;
-  margin-left: 9px;
-  float: right;
-}
-#root button.danger {
-  background-color: #D36C43;
-  color: #eee;
-  margin-left: 9px;
-  float: right;
-}
-#root button.form-ctrl {
-  float: right;
-  margin-left: 24px;
-}
-#root .dl-item.hovered {
-  background-color: #7B7D84;
-}
-#root .dl-item.hovered > * {
-  opacity: 0;
-}
-#root .dl-item.floating .list-item {
-  box-shadow: 6px 6px 2px rgba(0, 0, 0, 0.15);
-  transform: rotate(-1deg);
-  border: 1px solid #ddd;
-}
-#root .list-item {
-  padding: 12px 18px;
-  border-bottom: 1px solid #ddd;
-  font-family: Arial, Helvetica, sans-serif;
-  background-color: #fff;
-  transition: transform 0.2s ease-in-out;
-}
-#root .list-item > div {
-  padding-bottom: 12px;
-}
-#root .list-item.active {
-  background-color: rgba(153, 221, 255, 0.1);
-}
-#root .list-item::after {
-  display: block;
-  content: "";
-  clear: both;
+  max-width: 800px;
+  margin: 60px auto;
+  height: calc(100vh - 2 * 60px);
 }
 
 /*# sourceMappingURL=/styles.164d45a1.css.map */
