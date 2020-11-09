@@ -2,7 +2,7 @@ import levelup from "levelup";
 import leveldown from "leveldown";
 import encode from "encoding-down";
 import { customAlphabet } from "nanoid/non-secure";
-import { DB_PATH } from "../../shared/config";
+import { DB_PATH } from "../shared/config";
 
 export const DB_ID_ALPHABET = "abcdefghijklmnopqrstuvwxyz1234567890";
 export const DB_ID_LENGTH = 10;
