@@ -1,4 +1,3 @@
-import { act } from "react-test-renderer";
 import Message from "../../shared/Message";
 
 const sortByDate = (a: Message, b: Message): number => {
@@ -10,6 +9,7 @@ const sortByDate = (a: Message, b: Message): number => {
 export enum actionType {
     init,
     addToList,
+    removeFromList,
     updateInList
 }
 
@@ -43,6 +43,14 @@ export const messagesReducer = (
                 m => m.id === action.payload[0].id
             );
             updatedMessage.content = action.payload[0].content;
+            return newMessages;
+
+        case actionType.removeFromList:
+            const indexToDelete = newMessages.findIndex(
+                m => m.id === action.payload[0].id
+            );
+
+            newMessages.splice(indexToDelete, 1);
             return newMessages;
     }
 };

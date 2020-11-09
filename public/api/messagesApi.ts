@@ -22,5 +22,19 @@ export const messagesApi = {
         });
 
         return response.json();
+    },
+
+    async deleteMessage({
+        id,
+        channelId
+    }: Message): Promise<{ status: string }> {
+        const response = await fetch(
+            `${API_BASE_URL}api/message/${id}/${channelId}`,
+            {
+                method: "DELETE"
+            }
+        );
+
+        return response.json();
     }
 };

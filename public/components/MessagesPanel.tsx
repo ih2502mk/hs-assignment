@@ -53,7 +53,7 @@ export const MessagesPanel: FC<MessagesPanelProps> = ({
     const handleSubmitMessage = async (message: Message) => {
         const result = await messagesApi.sendMessage(message);
         if (result.status !== "success") {
-            throw new Error("Problem saving message");
+            throw new Error("Problem saving a message");
         }
 
         if (message.id) {
@@ -76,12 +76,26 @@ export const MessagesPanel: FC<MessagesPanelProps> = ({
         setEditedMessage({ channelId, ...emptyMessage });
     };
 
+    const handleDeleteMessage = async (message: Message) => {
+        const result = await messagesApi.deleteMessage(message);
+
+        if (result.status !== "success") {
+            throw new Error("Problem deleting a message");
+        }
+
+        updateMessages({
+            type: actionType.removeFromList,
+            payload: [message]
+        });
+    };
+
     return (
         <Wrapper className={className}>
             <MessagesList
                 messages={messages}
                 activeMessage={editedMessage}
                 onSelectMessage={handleSelectMessageForEditing}
+                onDeleteMessage={handleDeleteMessage}
             />
             <MessageForm
                 message={editedMessage}

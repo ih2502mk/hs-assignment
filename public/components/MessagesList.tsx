@@ -63,12 +63,14 @@ interface MessagesListProps {
     messages: Message[];
     activeMessage: Message;
     onSelectMessage: (message: Message) => void;
+    onDeleteMessage: (Message: Message) => void;
 }
 
 export const MessagesList: FC<MessagesListProps> = ({
     messages,
     activeMessage,
-    onSelectMessage
+    onSelectMessage,
+    onDeleteMessage
 }) => {
     const user = useContext(UserContext);
     const listEl = useRef(null);
@@ -100,7 +102,11 @@ export const MessagesList: FC<MessagesListProps> = ({
                                 >
                                     Edit
                                 </MessageActionBtn>
-                                <MessageActionBtn>Delete</MessageActionBtn>
+                                <MessageActionBtn
+                                    onClick={() => onDeleteMessage(m)}
+                                >
+                                    Delete
+                                </MessageActionBtn>
                             </>
                         ) : null}
                         <span>on {df.format(m.created)}</span>

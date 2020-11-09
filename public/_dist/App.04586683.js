@@ -30685,7 +30685,8 @@ const MessageActionBtn = styled_components_1.default.button`
 exports.MessagesList = ({
   messages,
   activeMessage,
-  onSelectMessage
+  onSelectMessage,
+  onDeleteMessage
 }) => {
   const user = react_1.useContext(context_1.UserContext);
   const listEl = react_1.useRef(null);
@@ -30699,7 +30700,9 @@ exports.MessagesList = ({
     className: activeMessage && m.id === activeMessage.id ? "active" : ""
   }, react_1.default.createElement(MessageInfoSection, null, react_1.default.createElement("b", null, m.author), user.name === m.author ? react_1.default.createElement(react_1.default.Fragment, null, react_1.default.createElement(MessageActionBtn, {
     onClick: () => onSelectMessage(m)
-  }, "Edit"), react_1.default.createElement(MessageActionBtn, null, "Delete")) : null, react_1.default.createElement("span", null, "on ", df.format(m.created))), react_1.default.createElement("div", null, m.content))));
+  }, "Edit"), react_1.default.createElement(MessageActionBtn, {
+    onClick: () => onDeleteMessage(m)
+  }, "Delete")) : null, react_1.default.createElement("span", null, "on ", df.format(m.created))), react_1.default.createElement("div", null, m.content))));
 };
 },{"react":"../node_modules/react/index.js","styled-components":"../node_modules/styled-components/dist/styled-components.browser.esm.js","../context":"context.ts"}],"../node_modules/react-fast-compare/index.js":[function(require,module,exports) {
 'use strict';
@@ -38456,7 +38459,8 @@ var actionType;
 (function (actionType) {
   actionType[actionType["init"] = 0] = "init";
   actionType[actionType["addToList"] = 1] = "addToList";
-  actionType[actionType["updateInList"] = 2] = "updateInList";
+  actionType[actionType["removeFromList"] = 2] = "removeFromList";
+  actionType[actionType["updateInList"] = 3] = "updateInList";
 })(actionType = exports.actionType || (exports.actionType = {}));
 
 exports.messagesReducer = (state, action) => {
@@ -38478,6 +38482,11 @@ exports.messagesReducer = (state, action) => {
     case actionType.updateInList:
       const updatedMessage = newMessages.find(m => m.id === action.payload[0].id);
       updatedMessage.content = action.payload[0].content;
+      return newMessages;
+
+    case actionType.removeFromList:
+      const indexToDelete = newMessages.findIndex(m => m.id === action.payload[0].id);
+      newMessages.splice(indexToDelete, 1);
       return newMessages;
   }
 };
@@ -38518,6 +38527,16 @@ exports.messagesApi = {
         "Content-Type": "application/json"
       },
       body: JSON.stringify(message)
+    });
+    return response.json();
+  },
+
+  async deleteMessage({
+    id,
+    channelId
+  }) {
+    const response = await fetch(`${config_1.API_BASE_URL}api/message/${id}/${channelId}`, {
+      method: "DELETE"
     });
     return response.json();
   }
@@ -38618,7 +38637,7 @@ exports.MessagesPanel = ({
     const result = await messagesApi_1.messagesApi.sendMessage(message);
 
     if (result.status !== "success") {
-      throw new Error("Problem saving message");
+      throw new Error("Problem saving a message");
     }
 
     if (message.id) {
@@ -38647,12 +38666,26 @@ exports.MessagesPanel = ({
     }, emptyMessage));
   };
 
+  const handleDeleteMessage = async message => {
+    const result = await messagesApi_1.messagesApi.deleteMessage(message);
+
+    if (result.status !== "success") {
+      throw new Error("Problem deleting a message");
+    }
+
+    updateMessages({
+      type: messagesReducer_1.actionType.removeFromList,
+      payload: [message]
+    });
+  };
+
   return react_1.default.createElement(Wrapper, {
     className: className
   }, react_1.default.createElement(MessagesList_1.MessagesList, {
     messages: messages,
     activeMessage: editedMessage,
-    onSelectMessage: handleSelectMessageForEditing
+    onSelectMessage: handleSelectMessageForEditing,
+    onDeleteMessage: handleDeleteMessage
   }), react_1.default.createElement(MessageForm_1.MessageForm, {
     message: editedMessage,
     onSubmitMessage: handleSubmitMessage,
