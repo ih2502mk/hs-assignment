@@ -30663,14 +30663,18 @@ const MessageInfoSection = styled_components_1.default.div`
         font-weight: bold;
         margin-right: auto;
     }
+
+    span {
+        margin-left: 0.6rem;
+    }
 `;
-const EditBtn = styled_components_1.default.button`
+const MessageActionBtn = styled_components_1.default.button`
     border: none;
     background: none;
     font-size: 0.7rem;
     color: rgb(117, 190, 255);
     text-decoration: underline;
-    margin: 0 0.3rem;
+    margin: 0 0.3rem 0 0;
     width: 32px;
 
     :hover {
@@ -30693,9 +30697,9 @@ exports.MessagesList = ({
   }, messages.map(m => react_1.default.createElement(MessageEntry, {
     key: m.id,
     className: activeMessage && m.id === activeMessage.id ? "active" : ""
-  }, react_1.default.createElement(MessageInfoSection, null, react_1.default.createElement("b", null, m.author), user.name === m.author ? react_1.default.createElement(EditBtn, {
+  }, react_1.default.createElement(MessageInfoSection, null, react_1.default.createElement("b", null, m.author), user.name === m.author ? react_1.default.createElement(react_1.default.Fragment, null, react_1.default.createElement(MessageActionBtn, {
     onClick: () => onSelectMessage(m)
-  }, "Edit") : null, react_1.default.createElement("span", null, "on ", df.format(m.created))), react_1.default.createElement("div", null, m.content))));
+  }, "Edit"), react_1.default.createElement(MessageActionBtn, null, "Delete")) : null, react_1.default.createElement("span", null, "on ", df.format(m.created))), react_1.default.createElement("div", null, m.content))));
 };
 },{"react":"../node_modules/react/index.js","styled-components":"../node_modules/styled-components/dist/styled-components.browser.esm.js","../context":"context.ts"}],"../node_modules/react-fast-compare/index.js":[function(require,module,exports) {
 'use strict';

@@ -39,15 +39,19 @@ const MessageInfoSection = styled.div`
         font-weight: bold;
         margin-right: auto;
     }
+
+    span {
+        margin-left: 0.6rem;
+    }
 `;
 
-const EditBtn = styled.button`
+const MessageActionBtn = styled.button`
     border: none;
     background: none;
     font-size: 0.7rem;
     color: rgb(117, 190, 255);
     text-decoration: underline;
-    margin: 0 0.3rem;
+    margin: 0 0.3rem 0 0;
     width: 32px;
 
     :hover {
@@ -90,9 +94,14 @@ export const MessagesList: FC<MessagesListProps> = ({
                     <MessageInfoSection>
                         <b>{m.author}</b>
                         {user.name === m.author ? (
-                            <EditBtn onClick={() => onSelectMessage(m)}>
-                                Edit
-                            </EditBtn>
+                            <>
+                                <MessageActionBtn
+                                    onClick={() => onSelectMessage(m)}
+                                >
+                                    Edit
+                                </MessageActionBtn>
+                                <MessageActionBtn>Delete</MessageActionBtn>
+                            </>
                         ) : null}
                         <span>on {df.format(m.created)}</span>
                     </MessageInfoSection>
