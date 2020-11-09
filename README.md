@@ -45,3 +45,4 @@ Besides search and ChatBot.
 4. Basic formatting for message content: bold, italic, underlined, strike-through, ability to insert fixed width (code) snippets.
 5. Ability to upload files: image, text, video.
 6. Transitions for changes in state: adding/deleting messages, change of layout of message form, switching between channels.
+7. Better types reuse between frontend and backend by utilizing e.g. https://github.com/gcanti/io-ts.
