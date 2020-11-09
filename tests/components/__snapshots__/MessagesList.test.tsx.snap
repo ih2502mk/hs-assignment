@@ -1,0 +1,80 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`snapshots renders a list of messages 1`] = `
+<ul
+  className="sc-bdfBwQ jUKHGV"
+>
+  <li
+    className="sc-gsTCUz cEgtDK active"
+  >
+    <div
+      className="sc-dlfnbm jzVabE"
+    >
+      <b>
+        John
+      </b>
+      <span>
+        on 
+        Mon, Nov 9, 2020, 10:17 AM
+      </span>
+    </div>
+    <div>
+      Test Msg 1
+    </div>
+  </li>
+  <li
+    className="sc-gsTCUz cEgtDK"
+  >
+    <div
+      className="sc-dlfnbm jzVabE"
+    >
+      <b>
+        Bob
+      </b>
+      <span>
+        on 
+        Mon, Nov 9, 2020, 10:17 AM
+      </span>
+    </div>
+    <div>
+      Test Msg 2
+    </div>
+  </li>
+  <li
+    className="sc-gsTCUz cEgtDK"
+  >
+    <div
+      className="sc-dlfnbm jzVabE"
+    >
+      <b>
+        Alice
+      </b>
+      <span>
+        on 
+        Mon, Nov 9, 2020, 10:17 AM
+      </span>
+    </div>
+    <div>
+      Test Msg 3
+    </div>
+  </li>
+  <li
+    className="sc-gsTCUz cEgtDK"
+  >
+    <div
+      className="sc-dlfnbm jzVabE"
+    >
+      <b>
+        Walter
+      </b>
+      <span>
+        on 
+        Mon, Nov 9, 2020, 10:17 AM
+      </span>
+    </div>
+    <div>
+      Test Msg 4
+    </div>
+  </li>
+</ul>
+`;

@@ -16,6 +16,9 @@ $ npm run seed
 
 ## start application for development
 $ npm start
+
+## run tests
+$ npm test
 ```
 
 Go to `localhost:3000` in the browser.

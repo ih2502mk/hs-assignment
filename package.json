@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "@types/encoding-down": "^5.0.0",
+    "@types/enzyme": "^3.10.8",
     "@types/koa": "2.11.0",
     "@types/koa-logger": "3.1.1",
     "@types/koa-router": "7.4.0",
@@ -27,6 +28,8 @@
     "@types/react-test-renderer": "^16.9.3",
     "@types/styled-components": "^5.1.4",
     "cross-env": "7.0.0",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.5",
     "jest": "^26.6.3",
     "lorem-ipsum": "^2.0.3",
     "nodemon": "2.0.2",

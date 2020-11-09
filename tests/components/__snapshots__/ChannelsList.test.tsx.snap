@@ -1,3 +1,32 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`snapshots renders a list of channels 1`] = `<ul />`;
+exports[`snapshots renders a list of channels 1`] = `
+<ul
+  className="sc-bdfBwQ jPGrQj"
+>
+  <li>
+    <button
+      className="sc-gsTCUz eocNJA"
+      onClick={[Function]}
+    >
+      Test Channel 1
+    </button>
+  </li>
+  <li>
+    <button
+      className="sc-gsTCUz eocNJA active"
+      onClick={[Function]}
+    >
+      Test Channel 2
+    </button>
+  </li>
+  <li>
+    <button
+      className="sc-gsTCUz eocNJA"
+      onClick={[Function]}
+    >
+      Test Channel 3
+    </button>
+  </li>
+</ul>
+`;
