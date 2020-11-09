@@ -80,6 +80,7 @@ export const MessagesPanel: FC<MessagesPanelProps> = ({
         <Wrapper className={className}>
             <MessagesList
                 messages={messages}
+                activeMessage={editedMessage}
                 onSelectMessage={handleSelectMessageForEditing}
             />
             <MessageForm

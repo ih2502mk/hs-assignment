@@ -17,19 +17,21 @@ const App: FC = () => {
 
     return (
         <UserContext.Provider value={currentUser}>
-            <ChannelsList
-                className="channels-panel"
-                channels={channels}
-                onSelectChannel={handleSelectChannel}
-            />
-            {currentChannel ? (
-                <MessagesPanel
-                    className="messages-panel"
-                    channelId={currentChannel.id}
+            <div className="channels-panel">
+                <div>Current user: {currentUser.name}</div>
+                <ChannelsList
+                    channels={channels}
+                    activeChannel={currentChannel}
+                    onSelectChannel={handleSelectChannel}
                 />
-            ) : (
-                <EmptyState>Please select Channel</EmptyState>
-            )}
+            </div>
+            <div className="messages-panel">
+                {currentChannel ? (
+                    <MessagesPanel channelId={currentChannel.id} />
+                ) : (
+                    <EmptyState>Please select Channel</EmptyState>
+                )}
+            </div>
         </UserContext.Provider>
     );
 };

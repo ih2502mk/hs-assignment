@@ -1,4 +1,4 @@
-import React, { FC, useContext, useEffect, useRef } from "react";
+import React, { FC, useContext, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import Message from "../../shared/Message";
 import { UserContext } from "../context";
@@ -22,6 +22,10 @@ const MessageEntry = styled.li`
     border: 3px solid #eee;
     border-radius: 6px;
     padding: 0.72rem;
+
+    &.active {
+        background-color: lightyellow;
+    }
 `;
 
 const MessageInfoSection = styled.div`
@@ -53,11 +57,13 @@ const EditBtn = styled.button`
 
 interface MessagesListProps {
     messages: Message[];
+    activeMessage: Message;
     onSelectMessage: (message: Message) => void;
 }
 
 export const MessagesList: FC<MessagesListProps> = ({
     messages,
+    activeMessage,
     onSelectMessage
 }) => {
     const user = useContext(UserContext);
@@ -73,7 +79,14 @@ export const MessagesList: FC<MessagesListProps> = ({
     return (
         <List ref={listEl}>
             {messages.map(m => (
-                <MessageEntry key={m.id}>
+                <MessageEntry
+                    key={m.id}
+                    className={
+                        activeMessage && m.id === activeMessage.id
+                            ? "active"
+                            : ""
+                    }
+                >
                     <MessageInfoSection>
                         <b>{m.author}</b>
                         {user.name === m.author ? (

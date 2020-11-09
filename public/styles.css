@@ -46,12 +46,6 @@ table {
 }
 
 :root {
-	/* --danger:#D36C43;
-	--primary:#0892A5;
-	--light:#F3F7EC;
-	--pale:#C1DBE3;
-	--dark:#7B7D84; */
-
 	--channel-list-width: 200px;
 	--base-width: 800px;
 	--base-top-margin: 60px;

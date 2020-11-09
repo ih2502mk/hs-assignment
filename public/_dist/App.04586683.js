@@ -30530,9 +30530,26 @@ const styled_components_1 = __importDefault(require("styled-components"));
 const List = styled_components_1.default.ul`
     padding: 12px;
 `;
+const ChannelBtn = styled_components_1.default.button`
+    width: 100%;
+    background: none;
+    margin: 0.6rem 0;
+    padding: 0.3rem 0.6rem;
+    border: none;
+    font-weight: bold;
+
+    &.active {
+        text-decoration: underline;
+    }
+
+    :hover {
+        cursor: pointer;
+    }
+`;
 
 exports.ChannelsList = ({
   channels,
+  activeChannel,
   onSelectChannel,
   className
 }) => {
@@ -30543,8 +30560,9 @@ exports.ChannelsList = ({
     id
   }) => react_1.default.createElement("li", {
     key: id
-  }, react_1.default.createElement("button", {
-    onClick: () => onSelectChannel(id)
+  }, react_1.default.createElement(ChannelBtn, {
+    onClick: () => onSelectChannel(id),
+    className: activeChannel && activeChannel.id === id ? "active" : ""
   }, name))));
 };
 },{"react":"../node_modules/react/index.js","styled-components":"../node_modules/styled-components/dist/styled-components.browser.esm.js"}],"context.ts":[function(require,module,exports) {
@@ -30629,6 +30647,10 @@ const MessageEntry = styled_components_1.default.li`
     border: 3px solid #eee;
     border-radius: 6px;
     padding: 0.72rem;
+
+    &.active {
+        background-color: lightyellow;
+    }
 `;
 const MessageInfoSection = styled_components_1.default.div`
     font-size: 0.7rem;
@@ -30658,6 +30680,7 @@ const EditBtn = styled_components_1.default.button`
 
 exports.MessagesList = ({
   messages,
+  activeMessage,
   onSelectMessage
 }) => {
   const user = react_1.useContext(context_1.UserContext);
@@ -30668,7 +30691,8 @@ exports.MessagesList = ({
   return react_1.default.createElement(List, {
     ref: listEl
   }, messages.map(m => react_1.default.createElement(MessageEntry, {
-    key: m.id
+    key: m.id,
+    className: activeMessage && m.id === activeMessage.id ? "active" : ""
   }, react_1.default.createElement(MessageInfoSection, null, react_1.default.createElement("b", null, m.author), user.name === m.author ? react_1.default.createElement(EditBtn, {
     onClick: () => onSelectMessage(m)
   }, "Edit") : null, react_1.default.createElement("span", null, "on ", df.format(m.created))), react_1.default.createElement("div", null, m.content))));
@@ -38623,6 +38647,7 @@ exports.MessagesPanel = ({
     className: className
   }, react_1.default.createElement(MessagesList_1.MessagesList, {
     messages: messages,
+    activeMessage: editedMessage,
     onSelectMessage: handleSelectMessageForEditing
   }), react_1.default.createElement(MessageForm_1.MessageForm, {
     message: editedMessage,
@@ -38694,6 +38719,7 @@ const styled_components_1 = __importDefault(require("styled-components"));
 const Wrapper = styled_components_1.default.div`
     color: lightgray;
     text-align: center;
+    width: 100%;
 `;
 
 exports.EmptyState = ({
@@ -38770,14 +38796,17 @@ const App = () => {
 
   return react_1.default.createElement(context_1.UserContext.Provider, {
     value: currentUser
-  }, react_1.default.createElement(ChannelsList_1.ChannelsList, {
-    className: "channels-panel",
+  }, react_1.default.createElement("div", {
+    className: "channels-panel"
+  }, react_1.default.createElement("div", null, "Current user: ", currentUser.name), react_1.default.createElement(ChannelsList_1.ChannelsList, {
     channels: channels,
+    activeChannel: currentChannel,
     onSelectChannel: handleSelectChannel
-  }), currentChannel ? react_1.default.createElement(MessagesPanel_1.MessagesPanel, {
-    className: "messages-panel",
+  })), react_1.default.createElement("div", {
+    className: "messages-panel"
+  }, currentChannel ? react_1.default.createElement(MessagesPanel_1.MessagesPanel, {
     channelId: currentChannel.id
-  }) : react_1.default.createElement(EmptyState_1.EmptyState, null, "Please select Channel"));
+  }) : react_1.default.createElement(EmptyState_1.EmptyState, null, "Please select Channel")));
 };
 
 react_dom_1.default.render(react_1.default.createElement(App, null), document.getElementById("root"));

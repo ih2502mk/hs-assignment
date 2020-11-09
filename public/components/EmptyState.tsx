@@ -4,6 +4,7 @@ import styled from "styled-components";
 const Wrapper = styled.div`
     color: lightgray;
     text-align: center;
+    width: 100%;
 `;
 
 export const EmptyState: FC<ReactNode> = ({ children }) => {
