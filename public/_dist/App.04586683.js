@@ -30550,6 +30550,38 @@ exports.ChannelsList = ({
 },{"react":"../node_modules/react/index.js","styled-components":"../node_modules/styled-components/dist/styled-components.browser.esm.js"}],"components/MessagesList.tsx":[function(require,module,exports) {
 "use strict";
 
+var __createBinding = this && this.__createBinding || (Object.create ? function (o, m, k, k2) {
+  if (k2 === undefined) k2 = k;
+  Object.defineProperty(o, k2, {
+    enumerable: true,
+    get: function () {
+      return m[k];
+    }
+  });
+} : function (o, m, k, k2) {
+  if (k2 === undefined) k2 = k;
+  o[k2] = m[k];
+});
+
+var __setModuleDefault = this && this.__setModuleDefault || (Object.create ? function (o, v) {
+  Object.defineProperty(o, "default", {
+    enumerable: true,
+    value: v
+  });
+} : function (o, v) {
+  o["default"] = v;
+});
+
+var __importStar = this && this.__importStar || function (mod) {
+  if (mod && mod.__esModule) return mod;
+  var result = {};
+  if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+
+  __setModuleDefault(result, mod);
+
+  return result;
+};
+
 var __importDefault = this && this.__importDefault || function (mod) {
   return mod && mod.__esModule ? mod : {
     "default": mod
@@ -30561,19 +30593,70 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.MessagesList = void 0;
 
-const react_1 = __importDefault(require("react"));
+const react_1 = __importStar(require("react"));
+
+const styled_components_1 = __importDefault(require("styled-components"));
+
+const df = new Intl.DateTimeFormat("en-US", {
+  weekday: "short",
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+  hour: "numeric",
+  minute: "numeric"
+});
+const List = styled_components_1.default.ul`
+    height: calc(100vh - 300px);
+    overflow-y: scroll;
+`;
+const MessageEntry = styled_components_1.default.li`
+    margin: 0.6rem 0;
+    border: 3px solid #eee;
+    border-radius: 6px;
+    padding: 0.72rem;
+`;
+const MessageInfoSection = styled_components_1.default.div`
+    font-size: 0.7rem;
+    color: grey;
+    padding: 0 0 0.3rem 0;
+    display: flex;
+    align-items: baseline;
+
+    b {
+        font-weight: bold;
+        margin-right: auto;
+    }
+`;
+const EditBtn = styled_components_1.default.button`
+    border: none;
+    background: none;
+    font-size: 0.7rem;
+    color: rgb(117, 190, 255);
+    text-decoration: underline;
+    margin: 0 0 0 0.3rem;
+
+    :hover {
+        cursor: pointer;
+    }
+`;
 
 exports.MessagesList = ({
-  messages
+  messages,
+  onSelectMessage
 }) => {
-  return react_1.default.createElement("ul", null, messages.map(({
-    content,
-    id
-  }) => react_1.default.createElement("li", {
-    key: id
-  }, content)));
+  const listEl = react_1.useRef(null);
+  react_1.useEffect(() => {
+    listEl.current.scrollTo(0, listEl.current.scrollHeight - listEl.current.clientHeight);
+  });
+  return react_1.default.createElement(List, {
+    ref: listEl
+  }, messages.map(m => react_1.default.createElement(MessageEntry, {
+    key: m.id
+  }, react_1.default.createElement(MessageInfoSection, null, react_1.default.createElement("b", null, m.author), react_1.default.createElement("span", null, "on ", df.format(m.created)), react_1.default.createElement(EditBtn, {
+    onClick: () => onSelectMessage(m)
+  }, "Edit")), react_1.default.createElement("div", null, m.content))));
 };
-},{"react":"../node_modules/react/index.js"}],"../node_modules/react-fast-compare/index.js":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","styled-components":"../node_modules/styled-components/dist/styled-components.browser.esm.js"}],"../node_modules/react-fast-compare/index.js":[function(require,module,exports) {
 'use strict';
 
 var isArray = Array.isArray;
@@ -38178,74 +38261,116 @@ const react_1 = __importDefault(require("react"));
 
 const formik_1 = require("formik");
 
+const styled_components_1 = __importDefault(require("styled-components"));
+
+const StyledTextarea = styled_components_1.default.textarea`
+    resize: none;
+    flex-grow: 1;
+    height: 80px;
+    border-radius: 6px;
+    border-width: 3px;
+    padding: 0.6rem;
+
+    :active,
+    :focus {
+        outline: none;
+        border-color: rgb(117, 190, 255);
+    }
+`;
+const StyledForm = styled_components_1.default.form`
+    display: flex;
+    align-items: flex-end;
+    padding: 1.2rem 0;
+
+    [type="submit"] {
+        padding: 0.6rem 1.2rem;
+        border: 3px solid darkgrey;
+        background-color: darkgrey;
+        color: white;
+        font-size: 1.2rem;
+        font-weight: bold;
+        border-radius: 6px;
+        margin-left: 0.6rem;
+
+        :active,
+        :focus {
+            outline: none;
+            border: 3px solid grey;
+        }
+
+        :active {
+            transform: translate3d(1px, 1px, 0);
+        }
+    }
+`;
+
 exports.MessageForm = ({
   message
 }) => {
   return react_1.default.createElement(formik_1.Formik, {
+    enableReinitialize: true,
     initialValues: {
       content: message.content
+    },
+    validate: values => {
+      console.log("Validation:", values);
     },
     onSubmit: (values, {
       setSubmitting
     }) => {
-      console.log(values);
+      console.log("Submission:", values);
       setTimeout(() => setSubmitting(false), 100);
     }
-  }, react_1.default.createElement(formik_1.Form, null, react_1.default.createElement(formik_1.Field, {
-    as: "textarea",
-    name: "content"
+  }, ({
+    touched,
+    errors,
+    values,
+    handleChange,
+    handleBlur,
+    handleSubmit
+  }) => react_1.default.createElement(StyledForm, {
+    onSubmit: handleSubmit
+  }, react_1.default.createElement(StyledTextarea, {
+    name: "content",
+    value: values.content,
+    onChange: handleChange,
+    onBlur: handleBlur,
+    placeholder: "Enter message ..."
   }), react_1.default.createElement("button", {
     type: "submit"
   }, "Send")));
 };
-},{"react":"../node_modules/react/index.js","formik":"../node_modules/formik/dist/formik.esm.js"}],"components/MessagesPanel.tsx":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","formik":"../node_modules/formik/dist/formik.esm.js","styled-components":"../node_modules/styled-components/dist/styled-components.browser.esm.js"}],"store/messagesReducer.ts":[function(require,module,exports) {
 "use strict";
-
-var __importDefault = this && this.__importDefault || function (mod) {
-  return mod && mod.__esModule ? mod : {
-    "default": mod
-  };
-};
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.MessagesPanel = void 0;
+exports.messagesReducer = exports.actionType = void 0;
+var actionType;
 
-const react_1 = __importDefault(require("react"));
+(function (actionType) {
+  actionType[actionType["init"] = 0] = "init";
+})(actionType = exports.actionType || (exports.actionType = {}));
 
-const styled_components_1 = __importDefault(require("styled-components"));
+exports.messagesReducer = (state, action) => {
+  const messages = state.slice();
 
-const MessagesList_1 = require("./MessagesList");
-
-const MessageForm_1 = require("./MessageForm");
-
-const Wrapper = styled_components_1.default.div`
-
-`;
-
-exports.MessagesPanel = ({
-  channelId,
-  className
-}) => {
-  const messages = [];
-  const editedMessage = {
-    content: "",
-    author: "",
-    id: null,
-    channelId,
-    created: new Date(),
-    updated: new Date()
-  };
-  return react_1.default.createElement(Wrapper, {
-    className: className
-  }, react_1.default.createElement(MessagesList_1.MessagesList, {
-    messages: messages
-  }), react_1.default.createElement(MessageForm_1.MessageForm, {
-    message: editedMessage
-  }));
+  switch (action.type) {
+    case actionType.init:
+      return action.payload.map(m => {
+        return Object.assign(Object.assign({}, m), {
+          created: m.created ? new Date(m.created) : null,
+          updated: m.updated ? new Date(m.updated) : null
+        });
+      }).sort((a, b) => {
+        if (a.created > b.created) return 1;
+        if (a.created < b.created) return -1;
+        return 0;
+      });
+  }
 };
-},{"react":"../node_modules/react/index.js","styled-components":"../node_modules/styled-components/dist/styled-components.browser.esm.js","./MessagesList":"components/MessagesList.tsx","./MessageForm":"components/MessageForm.tsx"}],"../shared/config.ts":[function(require,module,exports) {
+},{}],"../shared/config.ts":[function(require,module,exports) {
 var __dirname = "/Users/ihor/Projects/koa-app/shared";
 "use strict";
 
@@ -38258,8 +38383,122 @@ exports.IS_DEV = "development" === "development";
 exports.PUBLIC_ROOT = __dirname + "/../public";
 exports.BASE_PATH = "/";
 exports.DB_PATH = __dirname + "/../.db";
-exports.API_BASE_URL = '/';
-},{}],"store/channelsApi.ts":[function(require,module,exports) {
+exports.API_BASE_URL = "/";
+},{}],"api/messagesApi.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.messagesApi = void 0;
+
+const config_1 = require("../../shared/config");
+
+exports.messagesApi = {
+  async getAllMessagesInChannel(channelId) {
+    const response = await fetch(`${config_1.API_BASE_URL}api/messages/${channelId}`);
+    return response.json();
+  }
+
+};
+},{"../../shared/config":"../shared/config.ts"}],"components/MessagesPanel.tsx":[function(require,module,exports) {
+"use strict";
+
+var __createBinding = this && this.__createBinding || (Object.create ? function (o, m, k, k2) {
+  if (k2 === undefined) k2 = k;
+  Object.defineProperty(o, k2, {
+    enumerable: true,
+    get: function () {
+      return m[k];
+    }
+  });
+} : function (o, m, k, k2) {
+  if (k2 === undefined) k2 = k;
+  o[k2] = m[k];
+});
+
+var __setModuleDefault = this && this.__setModuleDefault || (Object.create ? function (o, v) {
+  Object.defineProperty(o, "default", {
+    enumerable: true,
+    value: v
+  });
+} : function (o, v) {
+  o["default"] = v;
+});
+
+var __importStar = this && this.__importStar || function (mod) {
+  if (mod && mod.__esModule) return mod;
+  var result = {};
+  if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+
+  __setModuleDefault(result, mod);
+
+  return result;
+};
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.MessagesPanel = void 0;
+
+const react_1 = __importStar(require("react"));
+
+const styled_components_1 = __importDefault(require("styled-components"));
+
+const MessagesList_1 = require("./MessagesList");
+
+const MessageForm_1 = require("./MessageForm");
+
+const messagesReducer_1 = require("../store/messagesReducer");
+
+const messagesApi_1 = require("../api/messagesApi");
+
+const Wrapper = styled_components_1.default.div``;
+
+exports.MessagesPanel = ({
+  channelId,
+  className
+}) => {
+  const [editedMessage, setEditedMessage] = react_1.useState({
+    id: null,
+    content: "",
+    channelId,
+    author: ""
+  });
+  const [messages, updateMessages] = react_1.useReducer(messagesReducer_1.messagesReducer, []);
+  react_1.useEffect(() => {
+    if (channelId) {
+      messagesApi_1.messagesApi.getAllMessagesInChannel(channelId).then(handleGetMessages);
+    }
+  }, [channelId]);
+
+  const handleGetMessages = messagesResp => {
+    updateMessages({
+      type: messagesReducer_1.actionType.init,
+      payload: messagesResp.messages
+    });
+  };
+
+  const handleSelectMessageForEditing = message => {
+    setEditedMessage(message);
+  };
+
+  return react_1.default.createElement(Wrapper, {
+    className: className
+  }, react_1.default.createElement(MessagesList_1.MessagesList, {
+    messages: messages,
+    onSelectMessage: handleSelectMessageForEditing
+  }), react_1.default.createElement(MessageForm_1.MessageForm, {
+    message: editedMessage
+  }));
+};
+},{"react":"../node_modules/react/index.js","styled-components":"../node_modules/styled-components/dist/styled-components.browser.esm.js","./MessagesList":"components/MessagesList.tsx","./MessageForm":"components/MessageForm.tsx","../store/messagesReducer":"store/messagesReducer.ts","../api/messagesApi":"api/messagesApi.ts"}],"api/channelsApi.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -38286,7 +38525,7 @@ exports.useAppInit = void 0;
 
 const react_1 = require("react");
 
-const channelsApi_1 = require("../store/channelsApi");
+const channelsApi_1 = require("../api/channelsApi");
 
 exports.useAppInit = () => {
   const [channels, setChannels] = react_1.useState([]);
@@ -38302,7 +38541,35 @@ exports.useAppInit = () => {
   }, []);
   return [channels, currentUser];
 };
-},{"react":"../node_modules/react/index.js","../store/channelsApi":"store/channelsApi.ts"}],"App.tsx":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","../api/channelsApi":"api/channelsApi.ts"}],"components/EmptyState.tsx":[function(require,module,exports) {
+"use strict";
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.EmptyState = void 0;
+
+const react_1 = __importDefault(require("react"));
+
+const styled_components_1 = __importDefault(require("styled-components"));
+
+const Wrapper = styled_components_1.default.div`
+    color: lightgray;
+    text-align: center;
+`;
+
+exports.EmptyState = ({
+  children
+}) => {
+  return react_1.default.createElement(Wrapper, null, children);
+};
+},{"react":"../node_modules/react/index.js","styled-components":"../node_modules/styled-components/dist/styled-components.browser.esm.js"}],"App.tsx":[function(require,module,exports) {
 "use strict";
 
 var __createBinding = this && this.__createBinding || (Object.create ? function (o, m, k, k2) {
@@ -38357,6 +38624,8 @@ const MessagesPanel_1 = require("./components/MessagesPanel");
 
 const useAppInit_1 = require("./hooks/useAppInit");
 
+const EmptyState_1 = require("./components/EmptyState");
+
 const App = () => {
   const [channels, currentUser] = useAppInit_1.useAppInit();
   const [currentChannel, setCurrentChannel] = react_1.useState(null);
@@ -38372,11 +38641,11 @@ const App = () => {
   }), currentChannel ? react_1.default.createElement(MessagesPanel_1.MessagesPanel, {
     className: "messages-panel",
     channelId: currentChannel.id
-  }) : react_1.default.createElement("div", null, "Please select Channel"));
+  }) : react_1.default.createElement(EmptyState_1.EmptyState, null, "Please select Channel"));
 };
 
 react_dom_1.default.render(react_1.default.createElement(App, null), document.getElementById("root"));
-},{"react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/index.js","./components/ChannelsList":"components/ChannelsList.tsx","./components/MessagesPanel":"components/MessagesPanel.tsx","./hooks/useAppInit":"hooks/useAppInit.ts"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/index.js","./components/ChannelsList":"components/ChannelsList.tsx","./components/MessagesPanel":"components/MessagesPanel.tsx","./hooks/useAppInit":"hooks/useAppInit.ts","./components/EmptyState":"components/EmptyState.tsx"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -38404,7 +38673,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49797" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61957" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

@@ -1,18 +1,20 @@
-import React, { FC, useState, useReducer, useEffect } from "react";
+import React, { FC, useState } from "react";
 import ReactDOM from "react-dom";
 import { ChannelsList } from "./components/ChannelsList";
 import { MessagesPanel } from "./components/MessagesPanel";
-import { useAppInit } from './hooks/useAppInit';
+
+import { useAppInit } from "./hooks/useAppInit";
 
 import Channel from "../shared/Channel";
+import { EmptyState } from "./components/EmptyState";
 
 const App: FC = () => {
-    const [ channels, currentUser ] = useAppInit();
-    const [ currentChannel, setCurrentChannel ] = useState<Channel>(null)
+    const [channels, currentUser] = useAppInit();
+    const [currentChannel, setCurrentChannel] = useState<Channel>(null);
 
-    const handleSelectChannel = (id:string) => {
-        setCurrentChannel(channels.find(c => c.id === id))
-    }
+    const handleSelectChannel = (id: string) => {
+        setCurrentChannel(channels.find(c => c.id === id));
+    };
 
     return (
         <>
@@ -21,13 +23,14 @@ const App: FC = () => {
                 channels={channels}
                 onSelectChannel={handleSelectChannel}
             />
-            { currentChannel ?
+            {currentChannel ? (
                 <MessagesPanel
                     className="messages-panel"
-                    channelId={currentChannel.id} 
+                    channelId={currentChannel.id}
                 />
-                : <div>Please select Channel</div>
-            }   
+            ) : (
+                <EmptyState>Please select Channel</EmptyState>
+            )}
         </>
     );
 };

@@ -9,5 +9,7 @@ export const DB_ID_LENGTH = 10;
 export const DB_ID_HI = "~";
 export const DB_ID_LO = "!";
 
-export const db = levelup(encode(leveldown(DB_PATH), { valueEncoding: "json" }));
+export const db = levelup(
+    encode(leveldown(DB_PATH), { valueEncoding: "json" })
+);
 export const nanoid = customAlphabet(DB_ID_ALPHABET, DB_ID_LENGTH);

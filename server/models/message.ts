@@ -44,7 +44,10 @@ export class MessageModel implements Message {
             const walker = (
                 err: Error,
                 key: string,
-                value: Pick<Message, "content" | "author" | "created" | "updated">
+                value: Pick<
+                    Message,
+                    "content" | "author" | "created" | "updated"
+                >
             ) => {
                 if (err) {
                     reject(err);
