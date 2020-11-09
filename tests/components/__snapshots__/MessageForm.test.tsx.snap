@@ -1,0 +1,51 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`snapshots renders empty form for message w/o id 1`] = `
+<form
+  className="sc-gsTCUz fFZBau"
+  onSubmit={[Function]}
+>
+  <textarea
+    className="sc-bdfBwQ dKlceo"
+    name="content"
+    onChange={[Function]}
+    placeholder="Enter message ..."
+    value=""
+  />
+  <div>
+    <button
+      type="submit"
+    >
+      Send
+    </button>
+  </div>
+</form>
+`;
+
+exports[`snapshots renders update form for message w/ id 1`] = `
+<form
+  className="sc-gsTCUz fFZBau"
+  onSubmit={[Function]}
+>
+  <textarea
+    className="sc-bdfBwQ dKlceo"
+    name="content"
+    onChange={[Function]}
+    placeholder="Enter message ..."
+    value="test test"
+  />
+  <div>
+    <button
+      type="submit"
+    >
+      Update
+    </button>
+    <button
+      onClick={[Function]}
+      type="reset"
+    >
+      Discard
+    </button>
+  </div>
+</form>
+`;

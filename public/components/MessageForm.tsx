@@ -1,5 +1,5 @@
 import React, { FC, useContext } from "react";
-import { Formik, useFormik } from "formik";
+import { useFormik } from "formik";
 import styled from "styled-components";
 import Message from "../../shared/Message";
 import { UserContext } from "../context";
