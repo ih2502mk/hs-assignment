@@ -1,12 +1,11 @@
-import React, { FC, useState } from "react";
+import React, { createContext, FC, useState } from "react";
 import ReactDOM from "react-dom";
 import { ChannelsList } from "./components/ChannelsList";
 import { MessagesPanel } from "./components/MessagesPanel";
-
 import { useAppInit } from "./hooks/useAppInit";
-
 import Channel from "../shared/Channel";
 import { EmptyState } from "./components/EmptyState";
+import { UserContext } from "./context";
 
 const App: FC = () => {
     const [channels, currentUser] = useAppInit();
@@ -17,7 +16,7 @@ const App: FC = () => {
     };
 
     return (
-        <>
+        <UserContext.Provider value={currentUser}>
             <ChannelsList
                 className="channels-panel"
                 channels={channels}
@@ -31,7 +30,7 @@ const App: FC = () => {
             ) : (
                 <EmptyState>Please select Channel</EmptyState>
             )}
-        </>
+        </UserContext.Provider>
     );
 };
 

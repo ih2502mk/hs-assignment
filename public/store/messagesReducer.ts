@@ -1,8 +1,16 @@
 import { act } from "react-test-renderer";
 import Message from "../../shared/Message";
 
+const sortByDate = (a: Message, b: Message): number => {
+    if (a.created > b.created) return 1;
+    if (a.created < b.created) return -1;
+    return 0;
+};
+
 export enum actionType {
-    init
+    init,
+    addToList,
+    updateInList
 }
 
 export const messagesReducer = (
@@ -12,7 +20,7 @@ export const messagesReducer = (
         payload: Message[];
     }
 ) => {
-    const messages = state.slice();
+    const newMessages = state.slice();
 
     switch (action.type) {
         case actionType.init:
@@ -24,10 +32,17 @@ export const messagesReducer = (
                         updated: m.updated ? new Date(m.updated) : null
                     };
                 })
-                .sort((a, b) => {
-                    if (a.created > b.created) return 1;
-                    if (a.created < b.created) return -1;
-                    return 0;
-                });
+                .sort(sortByDate);
+
+        case actionType.addToList:
+            newMessages.push(...action.payload);
+            return newMessages.sort(sortByDate);
+
+        case actionType.updateInList:
+            const updatedMessage = newMessages.find(
+                m => m.id === action.payload[0].id
+            );
+            updatedMessage.content = action.payload[0].content;
+            return newMessages;
     }
 };

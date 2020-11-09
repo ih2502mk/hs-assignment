@@ -1,6 +1,7 @@
-import React, { FC, useEffect, useRef } from "react";
+import React, { FC, useContext, useEffect, useRef } from "react";
 import styled from "styled-components";
 import Message from "../../shared/Message";
+import { UserContext } from "../context";
 
 const df = new Intl.DateTimeFormat("en-US", {
     weekday: "short",
@@ -42,7 +43,8 @@ const EditBtn = styled.button`
     font-size: 0.7rem;
     color: rgb(117, 190, 255);
     text-decoration: underline;
-    margin: 0 0 0 0.3rem;
+    margin: 0 0.3rem;
+    width: 32px;
 
     :hover {
         cursor: pointer;
@@ -58,6 +60,7 @@ export const MessagesList: FC<MessagesListProps> = ({
     messages,
     onSelectMessage
 }) => {
+    const user = useContext(UserContext);
     const listEl = useRef(null);
 
     useEffect(() => {
@@ -65,7 +68,7 @@ export const MessagesList: FC<MessagesListProps> = ({
             0,
             listEl.current.scrollHeight - listEl.current.clientHeight
         );
-    });
+    }, [messages]);
 
     return (
         <List ref={listEl}>
@@ -73,11 +76,12 @@ export const MessagesList: FC<MessagesListProps> = ({
                 <MessageEntry key={m.id}>
                     <MessageInfoSection>
                         <b>{m.author}</b>
+                        {user.name === m.author ? (
+                            <EditBtn onClick={() => onSelectMessage(m)}>
+                                Edit
+                            </EditBtn>
+                        ) : null}
                         <span>on {df.format(m.created)}</span>
-
-                        <EditBtn onClick={() => onSelectMessage(m)}>
-                            Edit
-                        </EditBtn>
                     </MessageInfoSection>
                     <div>{m.content}</div>
                 </MessageEntry>

@@ -24,14 +24,9 @@ router
         }
     })
 
-    .post("/api/message/:channel_id", koaBody(), async (ctx: Context) => {
-        const { id, content, author } = ctx.request.body;
-        const message = new MessageModel({
-            id,
-            content,
-            author,
-            channelId: ctx.params.channel_id
-        });
+    .post("/api/message", koaBody(), async (ctx: Context) => {
+        const bodyMessage = ctx.request.body;
+        const message = new MessageModel(bodyMessage);
 
         try {
             const savedId = await message.save();

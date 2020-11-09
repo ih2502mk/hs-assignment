@@ -9,8 +9,8 @@ export class MessageModel implements Message {
     created?: Date;
     updated?: Date;
 
-    constructor({ id, channelId, content }: Message) {
-        Object.assign(this, { id, channelId, content });
+    constructor({ id, channelId, content, author, created }: Message) {
+        Object.assign(this, { id, channelId, content, author, created });
     }
 
     async save() {

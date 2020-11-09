@@ -1,7 +1,8 @@
-import React, { FC } from "react";
-import { Formik } from "formik";
+import React, { FC, useContext } from "react";
+import { Formik, useFormik } from "formik";
 import styled from "styled-components";
 import Message from "../../shared/Message";
+import { UserContext } from "../context";
 
 const StyledTextarea = styled.textarea`
     resize: none;
@@ -20,10 +21,18 @@ const StyledTextarea = styled.textarea`
 
 const StyledForm = styled.form`
     display: flex;
-    align-items: flex-end;
     padding: 1.2rem 0;
 
-    [type="submit"] {
+    > div {
+        width: 125px;
+        display: flex;
+        flex-direction: column;
+        align-items: normal;
+        justify-content: space-between;
+    }
+
+    [type="submit"],
+    [type="reset"] {
         padding: 0.6rem 1.2rem;
         border: 3px solid darkgrey;
         background-color: darkgrey;
@@ -47,40 +56,58 @@ const StyledForm = styled.form`
 
 interface MessageFormProps {
     message: Message;
+    onSubmitMessage: (message: Message) => Promise<Message>;
+    onDiscardMessage: () => void;
 }
 
-export const MessageForm: FC<MessageFormProps> = ({ message }) => {
+export const MessageForm: FC<MessageFormProps> = ({
+    message,
+    onSubmitMessage,
+    onDiscardMessage
+}) => {
+    const user = useContext(UserContext);
+
+    const formik = useFormik({
+        enableReinitialize: true,
+        initialValues: { content: message.content },
+        onSubmit: (values, { setSubmitting, setErrors, setFieldValue }) => {
+            onSubmitMessage({
+                ...message,
+                content: values.content,
+                author: user.name
+            })
+                .catch(err => {
+                    setErrors({ content: err.message });
+                })
+                .finally(() => {
+                    setSubmitting(false);
+                    setFieldValue("content", "");
+                });
+        }
+    });
+
     return (
-        <Formik
-            enableReinitialize={true}
-            initialValues={{ content: message.content }}
-            validate={values => {
-                console.log("Validation:", values);
-            }}
-            onSubmit={(values, { setSubmitting }) => {
-                console.log("Submission:", values);
-                setTimeout(() => setSubmitting(false), 100);
-            }}
-        >
-            {({
-                touched,
-                errors,
-                values,
-                handleChange,
-                handleBlur,
-                handleSubmit
-            }) => (
-                <StyledForm onSubmit={handleSubmit}>
-                    <StyledTextarea
-                        name="content"
-                        value={values.content}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        placeholder="Enter message ..."
-                    />
-                    <button type="submit">Send</button>
-                </StyledForm>
-            )}
-        </Formik>
+        <StyledForm onSubmit={formik.handleSubmit}>
+            <StyledTextarea
+                name="content"
+                value={formik.values.content}
+                onChange={formik.handleChange}
+                placeholder="Enter message ..."
+            />
+            <div>
+                <button type="submit">{message.id ? "Update" : "Send"}</button>
+                {message.id ? (
+                    <button
+                        type="reset"
+                        onClick={() => {
+                            formik.setFieldValue("content", "");
+                            onDiscardMessage();
+                        }}
+                    >
+                        Discard
+                    </button>
+                ) : null}
+            </div>
+        </StyledForm>
     );
 };

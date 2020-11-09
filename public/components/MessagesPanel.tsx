@@ -9,6 +9,13 @@ import { messagesApi } from "../api/messagesApi";
 
 const Wrapper = styled.div``;
 
+const emptyMessage: Message = {
+    id: null,
+    content: "",
+    channelId: "",
+    author: ""
+};
+
 interface MessagesPanelProps {
     channelId: Channel["id"];
     className?: string;
@@ -19,10 +26,8 @@ export const MessagesPanel: FC<MessagesPanelProps> = ({
     className
 }) => {
     const [editedMessage, setEditedMessage] = useState<Message>({
-        id: null,
-        content: "",
-        channelId,
-        author: ""
+        ...emptyMessage,
+        channelId
     });
     const [messages, updateMessages] = useReducer(messagesReducer, []);
 
@@ -45,13 +50,43 @@ export const MessagesPanel: FC<MessagesPanelProps> = ({
         setEditedMessage(message);
     };
 
+    const handleSubmitMessage = async (message: Message) => {
+        const result = await messagesApi.sendMessage(message);
+        if (result.status !== "success") {
+            throw new Error("Problem saving message");
+        }
+
+        if (message.id) {
+            updateMessages({
+                type: actionType.updateInList,
+                payload: [message]
+            });
+        } else {
+            updateMessages({
+                type: actionType.addToList,
+                payload: [{ ...message, id: result.id }]
+            });
+        }
+
+        setEditedMessage({ channelId, ...emptyMessage });
+        return message;
+    };
+
+    const handleDiscardMessage = () => {
+        setEditedMessage({ channelId, ...emptyMessage });
+    };
+
     return (
         <Wrapper className={className}>
             <MessagesList
                 messages={messages}
                 onSelectMessage={handleSelectMessageForEditing}
             />
-            <MessageForm message={editedMessage} />
+            <MessageForm
+                message={editedMessage}
+                onSubmitMessage={handleSubmitMessage}
+                onDiscardMessage={handleDiscardMessage}
+            />
         </Wrapper>
     );
 };

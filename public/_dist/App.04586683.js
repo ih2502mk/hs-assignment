@@ -30547,7 +30547,20 @@ exports.ChannelsList = ({
     onClick: () => onSelectChannel(id)
   }, name))));
 };
-},{"react":"../node_modules/react/index.js","styled-components":"../node_modules/styled-components/dist/styled-components.browser.esm.js"}],"components/MessagesList.tsx":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","styled-components":"../node_modules/styled-components/dist/styled-components.browser.esm.js"}],"context.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.UserContext = void 0;
+
+const react_1 = require("react");
+
+exports.UserContext = react_1.createContext({
+  name: ""
+});
+},{"react":"../node_modules/react/index.js"}],"components/MessagesList.tsx":[function(require,module,exports) {
 "use strict";
 
 var __createBinding = this && this.__createBinding || (Object.create ? function (o, m, k, k2) {
@@ -30597,6 +30610,8 @@ const react_1 = __importStar(require("react"));
 
 const styled_components_1 = __importDefault(require("styled-components"));
 
+const context_1 = require("../context");
+
 const df = new Intl.DateTimeFormat("en-US", {
   weekday: "short",
   year: "numeric",
@@ -30633,7 +30648,8 @@ const EditBtn = styled_components_1.default.button`
     font-size: 0.7rem;
     color: rgb(117, 190, 255);
     text-decoration: underline;
-    margin: 0 0 0 0.3rem;
+    margin: 0 0.3rem;
+    width: 32px;
 
     :hover {
         cursor: pointer;
@@ -30644,19 +30660,20 @@ exports.MessagesList = ({
   messages,
   onSelectMessage
 }) => {
+  const user = react_1.useContext(context_1.UserContext);
   const listEl = react_1.useRef(null);
   react_1.useEffect(() => {
     listEl.current.scrollTo(0, listEl.current.scrollHeight - listEl.current.clientHeight);
-  });
+  }, [messages]);
   return react_1.default.createElement(List, {
     ref: listEl
   }, messages.map(m => react_1.default.createElement(MessageEntry, {
     key: m.id
-  }, react_1.default.createElement(MessageInfoSection, null, react_1.default.createElement("b", null, m.author), react_1.default.createElement("span", null, "on ", df.format(m.created)), react_1.default.createElement(EditBtn, {
+  }, react_1.default.createElement(MessageInfoSection, null, react_1.default.createElement("b", null, m.author), user.name === m.author ? react_1.default.createElement(EditBtn, {
     onClick: () => onSelectMessage(m)
-  }, "Edit")), react_1.default.createElement("div", null, m.content))));
+  }, "Edit") : null, react_1.default.createElement("span", null, "on ", df.format(m.created))), react_1.default.createElement("div", null, m.content))));
 };
-},{"react":"../node_modules/react/index.js","styled-components":"../node_modules/styled-components/dist/styled-components.browser.esm.js"}],"../node_modules/react-fast-compare/index.js":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","styled-components":"../node_modules/styled-components/dist/styled-components.browser.esm.js","../context":"context.ts"}],"../node_modules/react-fast-compare/index.js":[function(require,module,exports) {
 'use strict';
 
 var isArray = Array.isArray;
@@ -38246,6 +38263,38 @@ exports.FastField = FastField;
 },{"react":"../node_modules/react/index.js","react-fast-compare":"../node_modules/react-fast-compare/index.js","deepmerge":"../node_modules/formik/node_modules/deepmerge/dist/es.js","lodash-es/isPlainObject":"../node_modules/lodash-es/isPlainObject.js","lodash-es/clone":"../node_modules/lodash-es/clone.js","lodash-es/toPath":"../node_modules/lodash-es/toPath.js","tiny-warning":"../node_modules/tiny-warning/dist/tiny-warning.esm.js","scheduler":"../node_modules/formik/node_modules/scheduler/index.js","hoist-non-react-statics":"../node_modules/hoist-non-react-statics/dist/hoist-non-react-statics.cjs.js","lodash-es/cloneDeep":"../node_modules/lodash-es/cloneDeep.js"}],"components/MessageForm.tsx":[function(require,module,exports) {
 "use strict";
 
+var __createBinding = this && this.__createBinding || (Object.create ? function (o, m, k, k2) {
+  if (k2 === undefined) k2 = k;
+  Object.defineProperty(o, k2, {
+    enumerable: true,
+    get: function () {
+      return m[k];
+    }
+  });
+} : function (o, m, k, k2) {
+  if (k2 === undefined) k2 = k;
+  o[k2] = m[k];
+});
+
+var __setModuleDefault = this && this.__setModuleDefault || (Object.create ? function (o, v) {
+  Object.defineProperty(o, "default", {
+    enumerable: true,
+    value: v
+  });
+} : function (o, v) {
+  o["default"] = v;
+});
+
+var __importStar = this && this.__importStar || function (mod) {
+  if (mod && mod.__esModule) return mod;
+  var result = {};
+  if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+
+  __setModuleDefault(result, mod);
+
+  return result;
+};
+
 var __importDefault = this && this.__importDefault || function (mod) {
   return mod && mod.__esModule ? mod : {
     "default": mod
@@ -38257,11 +38306,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.MessageForm = void 0;
 
-const react_1 = __importDefault(require("react"));
+const react_1 = __importStar(require("react"));
 
 const formik_1 = require("formik");
 
 const styled_components_1 = __importDefault(require("styled-components"));
+
+const context_1 = require("../context");
 
 const StyledTextarea = styled_components_1.default.textarea`
     resize: none;
@@ -38279,10 +38330,18 @@ const StyledTextarea = styled_components_1.default.textarea`
 `;
 const StyledForm = styled_components_1.default.form`
     display: flex;
-    align-items: flex-end;
     padding: 1.2rem 0;
 
-    [type="submit"] {
+    > div {
+        width: 125px;
+        display: flex;
+        flex-direction: column;
+        align-items: normal;
+        justify-content: space-between;
+    }
+
+    [type="submit"],
+    [type="reset"] {
         padding: 0.6rem 1.2rem;
         border: 3px solid darkgrey;
         background-color: darkgrey;
@@ -38305,56 +38364,75 @@ const StyledForm = styled_components_1.default.form`
 `;
 
 exports.MessageForm = ({
-  message
+  message,
+  onSubmitMessage,
+  onDiscardMessage
 }) => {
-  return react_1.default.createElement(formik_1.Formik, {
+  const user = react_1.useContext(context_1.UserContext);
+  const formik = formik_1.useFormik({
     enableReinitialize: true,
     initialValues: {
       content: message.content
     },
-    validate: values => {
-      console.log("Validation:", values);
-    },
     onSubmit: (values, {
-      setSubmitting
+      setSubmitting,
+      setErrors,
+      setFieldValue
     }) => {
-      console.log("Submission:", values);
-      setTimeout(() => setSubmitting(false), 100);
+      onSubmitMessage(Object.assign(Object.assign({}, message), {
+        content: values.content,
+        author: user.name
+      })).catch(err => {
+        setErrors({
+          content: err.message
+        });
+      }).finally(() => {
+        setSubmitting(false);
+        setFieldValue("content", "");
+      });
     }
-  }, ({
-    touched,
-    errors,
-    values,
-    handleChange,
-    handleBlur,
-    handleSubmit
-  }) => react_1.default.createElement(StyledForm, {
-    onSubmit: handleSubmit
+  });
+  return react_1.default.createElement(StyledForm, {
+    onSubmit: formik.handleSubmit
   }, react_1.default.createElement(StyledTextarea, {
     name: "content",
-    value: values.content,
-    onChange: handleChange,
-    onBlur: handleBlur,
+    value: formik.values.content,
+    onChange: formik.handleChange,
     placeholder: "Enter message ..."
-  }), react_1.default.createElement("button", {
+  }), react_1.default.createElement("div", null, react_1.default.createElement("button", {
     type: "submit"
-  }, "Send")));
+  }, message.id ? "Update" : "Send"), message.id ? react_1.default.createElement("button", {
+    type: "reset",
+    onClick: () => {
+      formik.setFieldValue("content", "");
+      onDiscardMessage();
+    }
+  }, "Discard") : null));
 };
-},{"react":"../node_modules/react/index.js","formik":"../node_modules/formik/dist/formik.esm.js","styled-components":"../node_modules/styled-components/dist/styled-components.browser.esm.js"}],"store/messagesReducer.ts":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","formik":"../node_modules/formik/dist/formik.esm.js","styled-components":"../node_modules/styled-components/dist/styled-components.browser.esm.js","../context":"context.ts"}],"store/messagesReducer.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.messagesReducer = exports.actionType = void 0;
+
+const sortByDate = (a, b) => {
+  if (a.created > b.created) return 1;
+  if (a.created < b.created) return -1;
+  return 0;
+};
+
 var actionType;
 
 (function (actionType) {
   actionType[actionType["init"] = 0] = "init";
+  actionType[actionType["addToList"] = 1] = "addToList";
+  actionType[actionType["updateInList"] = 2] = "updateInList";
 })(actionType = exports.actionType || (exports.actionType = {}));
 
 exports.messagesReducer = (state, action) => {
-  const messages = state.slice();
+  const newMessages = state.slice();
 
   switch (action.type) {
     case actionType.init:
@@ -38363,11 +38441,16 @@ exports.messagesReducer = (state, action) => {
           created: m.created ? new Date(m.created) : null,
           updated: m.updated ? new Date(m.updated) : null
         });
-      }).sort((a, b) => {
-        if (a.created > b.created) return 1;
-        if (a.created < b.created) return -1;
-        return 0;
-      });
+      }).sort(sortByDate);
+
+    case actionType.addToList:
+      newMessages.push(...action.payload);
+      return newMessages.sort(sortByDate);
+
+    case actionType.updateInList:
+      const updatedMessage = newMessages.find(m => m.id === action.payload[0].id);
+      updatedMessage.content = action.payload[0].content;
+      return newMessages;
   }
 };
 },{}],"../shared/config.ts":[function(require,module,exports) {
@@ -38397,6 +38480,17 @@ const config_1 = require("../../shared/config");
 exports.messagesApi = {
   async getAllMessagesInChannel(channelId) {
     const response = await fetch(`${config_1.API_BASE_URL}api/messages/${channelId}`);
+    return response.json();
+  },
+
+  async sendMessage(message) {
+    const response = await fetch(`${config_1.API_BASE_URL}api/message`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(message)
+    });
     return response.json();
   }
 
@@ -38460,17 +38554,20 @@ const messagesReducer_1 = require("../store/messagesReducer");
 const messagesApi_1 = require("../api/messagesApi");
 
 const Wrapper = styled_components_1.default.div``;
+const emptyMessage = {
+  id: null,
+  content: "",
+  channelId: "",
+  author: ""
+};
 
 exports.MessagesPanel = ({
   channelId,
   className
 }) => {
-  const [editedMessage, setEditedMessage] = react_1.useState({
-    id: null,
-    content: "",
-    channelId,
-    author: ""
-  });
+  const [editedMessage, setEditedMessage] = react_1.useState(Object.assign(Object.assign({}, emptyMessage), {
+    channelId
+  }));
   const [messages, updateMessages] = react_1.useReducer(messagesReducer_1.messagesReducer, []);
   react_1.useEffect(() => {
     if (channelId) {
@@ -38489,13 +38586,48 @@ exports.MessagesPanel = ({
     setEditedMessage(message);
   };
 
+  const handleSubmitMessage = async message => {
+    const result = await messagesApi_1.messagesApi.sendMessage(message);
+
+    if (result.status !== "success") {
+      throw new Error("Problem saving message");
+    }
+
+    if (message.id) {
+      updateMessages({
+        type: messagesReducer_1.actionType.updateInList,
+        payload: [message]
+      });
+    } else {
+      updateMessages({
+        type: messagesReducer_1.actionType.addToList,
+        payload: [Object.assign(Object.assign({}, message), {
+          id: result.id
+        })]
+      });
+    }
+
+    setEditedMessage(Object.assign({
+      channelId
+    }, emptyMessage));
+    return message;
+  };
+
+  const handleDiscardMessage = () => {
+    setEditedMessage(Object.assign({
+      channelId
+    }, emptyMessage));
+  };
+
   return react_1.default.createElement(Wrapper, {
     className: className
   }, react_1.default.createElement(MessagesList_1.MessagesList, {
     messages: messages,
     onSelectMessage: handleSelectMessageForEditing
   }), react_1.default.createElement(MessageForm_1.MessageForm, {
-    message: editedMessage
+    message: editedMessage,
+    onSubmitMessage: handleSubmitMessage,
+    onDiscardMessage: handleDiscardMessage
   }));
 };
 },{"react":"../node_modules/react/index.js","styled-components":"../node_modules/styled-components/dist/styled-components.browser.esm.js","./MessagesList":"components/MessagesList.tsx","./MessageForm":"components/MessageForm.tsx","../store/messagesReducer":"store/messagesReducer.ts","../api/messagesApi":"api/messagesApi.ts"}],"api/channelsApi.ts":[function(require,module,exports) {
@@ -38626,6 +38758,8 @@ const useAppInit_1 = require("./hooks/useAppInit");
 
 const EmptyState_1 = require("./components/EmptyState");
 
+const context_1 = require("./context");
+
 const App = () => {
   const [channels, currentUser] = useAppInit_1.useAppInit();
   const [currentChannel, setCurrentChannel] = react_1.useState(null);
@@ -38634,7 +38768,9 @@ const App = () => {
     setCurrentChannel(channels.find(c => c.id === id));
   };
 
-  return react_1.default.createElement(react_1.default.Fragment, null, react_1.default.createElement(ChannelsList_1.ChannelsList, {
+  return react_1.default.createElement(context_1.UserContext.Provider, {
+    value: currentUser
+  }, react_1.default.createElement(ChannelsList_1.ChannelsList, {
     className: "channels-panel",
     channels: channels,
     onSelectChannel: handleSelectChannel
@@ -38645,7 +38781,7 @@ const App = () => {
 };
 
 react_dom_1.default.render(react_1.default.createElement(App, null), document.getElementById("root"));
-},{"react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/index.js","./components/ChannelsList":"components/ChannelsList.tsx","./components/MessagesPanel":"components/MessagesPanel.tsx","./hooks/useAppInit":"hooks/useAppInit.ts","./components/EmptyState":"components/EmptyState.tsx"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/index.js","./components/ChannelsList":"components/ChannelsList.tsx","./components/MessagesPanel":"components/MessagesPanel.tsx","./hooks/useAppInit":"hooks/useAppInit.ts","./components/EmptyState":"components/EmptyState.tsx","./context":"context.ts"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -38673,7 +38809,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61957" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56758" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

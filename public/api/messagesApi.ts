@@ -10,5 +10,17 @@ export const messagesApi = {
             `${API_BASE_URL}api/messages/${channelId}`
         );
         return response.json();
+    },
+
+    async sendMessage(
+        message: Message
+    ): Promise<{ status: string; id: string }> {
+        const response = await fetch(`${API_BASE_URL}api/message`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(message)
+        });
+
+        return response.json();
     }
 };
